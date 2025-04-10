@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register with Oasis</title>
+  <link rel="stylesheet" href="Styles/register.css" />
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="register-container">
+
+    <a href="index.html" class="back-button">← Back</a>
+    
+    <img src="Images/OasisLogo2.svg" class="register-logo" alt="Oasis CM Logo">
+
+    <h1>Register with Oasis</h1>
+    <p>Please fill in the information below to create your account.</p>
+
+    <input type="text" id="companyName" placeholder="Company Name" required />
+    <input type="text" id="yourName" placeholder="Your Name" required />
+    <input type="email" id="email" placeholder="Email Address" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <input type="tel" id="phone" placeholder="Phone Number (optional)" />
+
+    <button onclick="handleRegistration()">Register</button>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="JS/firebaseAuth.js"></script> <!-- Your config -->
+
+  <script>
+    async function handleRegistration() {
+      const company = document.getElementById("companyName").value.trim();
+      const name = document.getElementById("yourName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const phone = document.getElementById("phone").value.trim();
+
+      if (!company || !name || !email || !password) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+
+      try {
+        // Create user in Firebase Auth
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        const uid = userCredential.user.uid;
+
+        // Save extra details in Firestore
+        await db.collection("users").doc(uid).set({
+          companyName: company,
+          userName: name,
+          email: email,
+          phone: phone || null,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert("✅ Registration successful! You can now log in.");
+        window.location.href = "LoginPage.html";
+      } catch (error) {
+        console.error("❌ Registration failed:", error.message);
+        alert(error.message);
+      }
+    }
+  </script>
+</body>
+</html>

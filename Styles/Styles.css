@@ -1,0 +1,210 @@
+body {
+    margin: 0;
+    font-family: 'League Spartan', sans-serif;
+    background-color: #f1efe7;
+  }
+  
+  .oasis-header {
+    background-color: #f1efe7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    flex-wrap: wrap;
+  }
+  
+  .logo img {
+    height: 50px;
+    height: 150px;
+    width: 150px;
+  }
+  
+  .center-buttons {
+    flex-grow: 1;
+    text-align: center;
+  }
+  
+  .center-buttons .header-btn {
+    margin: 0 10px;
+    font-size: 21px;
+    font-weight: 600;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: black;
+  }
+  
+  .right-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  /* Language Selection Button */
+  .language-selector {
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    background-color: #ffffff;
+    color: #0e1218;
+    border: 2px solid #0e1218;
+    border-radius: 8px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%230e1218' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .language-selector:hover {
+    background-color: #f1efe7;
+    border-color: #ffa600;
+  }
+  
+  @media (max-width: 600px) {
+    .language-selector {
+      width: 100%;
+      font-size: 12px;
+    }
+  }
+  
+  .header-btn {
+    background-color: #000;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .header-btn:hover {
+    opacity: 0.85;
+  }
+  
+  .register {
+    background-color: #ffa600;
+    color: #000;
+  }
+  
+  /* Floating Text Style */
+  .floating-cloud-section {
+    position: relative;
+    background-color: #f1efe7;
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+  }
+  
+  #floatingTextContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .floating-item {
+    position: absolute;
+    font-family: 'League Spartan', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0e1218;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    white-space: nowrap;
+  }
+  
+  /* Make page scrollable with header always fixed */
+body {
+    margin: 0;
+    font-family: 'League Spartan', sans-serif;
+    background-color: #f1efe7;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .oasis-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: #f1efe7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  /* Content filler for scrolling (replace with your real sections) */
+  main {
+    flex: 1;
+    padding: 40px 20px;
+  }
+  
+  /* Footer styling */
+  .footer {
+    background-color: #f1efe7; /* darker shade of #f1efe7 */
+    padding: 30px 20px;
+    text-align: center;
+    color: #0e1218;
+  }
+
+  .footer-logo {
+    width: 125px;
+    height: 125px;
+  }
+  
+  .footer-content h3 {
+    margin-bottom: 12px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .footer-links a {
+    color: #0e1218;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    transition: color 0.2s ease;
+  }
+  
+  .footer-links a:hover {
+    color: #ffa600;
+  }
+  
+  /*next section style to be changed*/
+  .next-section {
+    padding: 80px 20px;
+    background-color: #ffffff;
+    color: #0e1218;
+    text-align: center;
+  }
+  
+  .next-section-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .next-section h2 {
+    font-size: 2.4rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
+  
+  .next-section p {
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+  

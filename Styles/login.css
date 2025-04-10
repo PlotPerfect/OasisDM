@@ -1,0 +1,138 @@
+body {
+    margin: 0;
+    font-family: 'League Spartan', sans-serif;
+    background-color: #f1efe7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .login-container {
+    background-color: #fff;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  
+  .input-group {
+    display: flex;
+    margin-bottom: 15px;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  select,
+  input[type="tel"],
+  .code-input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 160px;
+    box-sizing: border-box;
+  }
+  
+  .code-input {
+    max-width: 100%;
+    margin-top: 10px;
+  }
+  
+  button {
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #0e1218;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  button:hover {
+    opacity: 0.9;
+  }
+  
+  @media (max-width: 600px) {
+    .input-group {
+      flex-direction: column;
+    }
+  
+    select,
+    input[type="tel"] {
+      max-width: 100%;
+    }
+  }
+  
+    /* back button */ 
+    .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        text-decoration: none;
+        font-size: 16px;
+        color: #0e1218;
+        font-weight: 600;
+        background-color: #f1efe7;
+        padding: 8px 14px;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+      
+      .back-button:hover {
+        background-color: #ddd;
+        color: #000;
+      }
+
+      .login-logo {
+        position: absolute;
+        top: 200px;
+        left: 10%;
+        width: 300px;
+        height: 300px;
+      }
+      
+      .email-login, .phone-login {
+        margin-top: 30px;
+        text-align: center;
+      }
+      
+      .email-login input, .phone-login input {
+        margin: 10px 0;
+        padding: 10px;
+        font-size: 16px;
+        width: 100%;
+        max-width: 300px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+      
+      .email-login button, .phone-login button {
+        padding: 10px 20px;
+        font-weight: 600;
+        margin-top: 10px;
+        background-color: #0e1218;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      

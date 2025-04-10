@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Oasis Dashboard</title>
+  <link rel="stylesheet" href="Styles/dashboard.css" />
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+
+
+  <!-- AG Grid CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css" />
+</head>
+<body>
+  <div class="dashboard-wrapper">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <img src="Images/OasisLogo2.svg" class="sidebar-logo" alt="Oasis Logo">
+      <nav class="sidebar-nav">
+        <button class="nav-button active">
+          <img src="Images/OasisTaskIcon.svg" alt="Tasks" class="nav-icon">
+        </button>
+
+        <!-- Company logo panel -->
+        <div class="sidebar-company" onclick="toggleCompanyPanel()">
+          <img src="Images/CompanyLogoBaseIMG.svg" alt="Company Logo" class="company-logo">
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="top-bar">
+        <h1>Tasks</h1>
+        <div class="task-tabs">
+          <button class="task-tab active" onclick="switchTaskView('list')">List</button>
+          <button class="task-tab" onclick="switchTaskView('schedule')">Schedule</button>
+          <button class="task-tab" onclick="switchTaskView('templates')">Templates</button>
+        </div>
+        <button class="add-task-button" onclick="toggleTemplatePanel()">+ Add Task</button>
+      </div>
+
+      <!-- Task Template Panel -->
+      <div id="taskTemplatePanel" class="template-panel">
+        <div class="template-header">
+          <span>Choose task template</span>
+          <button onclick="toggleTemplatePanel()">✕</button>
+        </div>
+        <div class="template-search">
+          <input type="text" placeholder="Search" />
+        </div>
+        <div class="template-options">
+          <div class="template-item" onclick="alert('Blank Task Selected')">
+            <strong>🗒️ Blank template</strong><br/>
+            <small>Without any prefilled values</small>
+          </div>
+          <div class="template-item">Job Sheet</div>
+          <div class="template-item">Meeting</div>
+          <div class="template-item">OFF</div>
+          <div class="template-item">Site Survey</div>
+        </div>
+
+        <div id="companyPanel" class="company-panel">
+          <div class="company-header">COMPANIES</div>
+          <div class="company-card">
+            <img src="Images/CompanyLogoBaseIMG.svg" class="company-logo-sm" />
+            <div class="company-info">
+              <strong>Corrigan and Chapman Construction Limited</strong>
+              <p>Verify your email and phone to access other companies.</p>
+            </div>
+            <button class="verify-button">✔ Verify</button>
+          </div>
+          <button class="logout-button" onclick="window.location.href='index.html'">🚪 Log out</button>
+        </div>
+      </div>
+
+      <!-- Views Section -->
+      <div class="task-section">
+
+        <!-- List View (Grid) -->
+        <div id="taskListView" class="task-view">
+          <div id="taskGrid" class="ag-theme-alpine" style="height: 600px; width: 100%;"></div>
+        </div>
+
+        <!-- Schedule View -->
+        <div id="taskScheduleView" class="task-view hidden">
+            <div id="calendar" style="height: 650px;"></div>
+          </div>
+
+        <!-- Templates View -->
+        <div id="taskTemplatesView" class="task-view hidden">
+          <p>This is the templates view. (Placeholder)</p>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- AG Grid JS -->
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
+  <!-- Calendar -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const columnDefs = [
+        { headerName: "Project", field: "project" },
+        { headerName: "ID", field: "id", width: 90 },
+        { headerName: "Status", field: "status" },
+        { headerName: "Assigned", field: "assigned" },
+        { headerName: "Beginning", field: "begin" },
+        { headerName: "End", field: "end" },
+        { headerName: "Description", field: "description" },
+        { headerName: "Created by", field: "createdBy" }
+      ];
+
+      const rowData = [
+        {
+          project: "Southbury Leisure Centre",
+          id: 30,
+          status: "Done",
+          assigned: "BL, CS",
+          begin: "5 Apr 2025 08:00",
+          end: "5 Apr 2025 17:00",
+          description: "Staff Room Area Works",
+          createdBy: "Adam Chapman"
+        }
+      ];
+
+      const gridOptions = {
+        columnDefs,
+        rowData,
+        pagination: true,
+        defaultColDef: {
+          sortable: true,
+          filter: true,
+          resizable: true
+        }
+      };
+
+      const gridDiv = document.getElementById("taskGrid");
+      agGrid.createGrid(gridDiv, gridOptions);
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'timeGridWeek',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'timeGridDay,timeGridWeek,dayGridMonth'
+      },
+      events: [
+        {
+          title: 'Job Sheet - Southbury Leisure Centre',
+          start: '2025-04-07T08:00:00',
+          end: '2025-04-07T17:00:00',
+          backgroundColor: '#0e6f4f'
+        },
+        {
+          title: 'Job Sheet - Crystal Palace',
+          start: '2025-04-08T08:00:00',
+          end: '2025-04-08T17:00:00',
+          backgroundColor: '#004f9e'
+        },
+        {
+          title: 'OFF - Paid Holiday',
+          start: '2025-04-07T08:00:00',
+          end: '2025-04-07T17:00:00',
+          backgroundColor: '#9e00b0'
+        }
+      ]
+    });
+
+    calendar.render();
+  });
+
+    // Panel toggles
+    function toggleTemplatePanel() {
+      const panel = document.getElementById("taskTemplatePanel");
+      panel.classList.toggle("open");
+    }
+
+    function toggleCompanyPanel() {
+      const panel = document.getElementById("companyPanel");
+      panel.classList.toggle("open");
+    }
+
+    // View Switching Logic
+    function switchTaskView(view) {
+      const views = ['list', 'schedule', 'templates'];
+      views.forEach(v => {
+        document.getElementById(`task${capitalize(v)}View`).classList.add('hidden');
+        document.querySelector(`.task-tab[onclick*="${v}"]`).classList.remove('active');
+      });
+      document.getElementById(`task${capitalize(view)}View`).classList.remove('hidden');
+      document.querySelector(`.task-tab[onclick*="${view}"]`).classList.add('active');
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+  </script>
+</body>
+</html>

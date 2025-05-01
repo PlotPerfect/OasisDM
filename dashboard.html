@@ -17,11 +17,24 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-      <img src="Images/OasisLogo2.svg" class="sidebar-logo" alt="Oasis Logo">
+      <img src="Images/OasisLogo3.svg" class="sidebar-logo" alt="Oasis Logo">
       <nav class="sidebar-nav">
         <button class="nav-button active">
           <img src="Images/OasisTaskIcon.svg" alt="Tasks" class="nav-icon">
         </button>
+        <button class="nav-button">
+          <img src="Images/ChatIcon.svg" alt="Chat" class="nav-icon">
+        </button>
+        <button class="nav-button">
+          <img src="Images/ProjectsIcon.svg" alt="Projects" class="nav-icon">
+        </button>
+        <button class="nav-button">
+          <img src="Images/trackericon.svg" alt="Tracker" class="nav-icon">
+        </button>
+        <button class="nav-button">
+          <img src="Images/CrewIcon.svg" alt="Crew" class="nav-icon">
+        </button>
+
 
         <!-- Company logo panel -->
         <div class="sidebar-company" onclick="toggleCompanyPanel()">
@@ -52,7 +65,7 @@
           <input type="text" placeholder="Search" />
         </div>
         <div class="template-options">
-          <div class="template-item" onclick="alert('Blank Task Selected')">
+          <div class="template-item" onclick="openTaskDetailFromBlankTemplate()">
             <strong>🗒️ Blank template</strong><br/>
             <small>Without any prefilled values</small>
           </div>
@@ -61,6 +74,128 @@
           <div class="template-item">OFF</div>
           <div class="template-item">Site Survey</div>
         </div>
+
+<!-- Task Detail Panel -->
+<div id="taskDetailPanel" class="task-panel hidden">
+  <div class="task-panel-header">
+    <span>Edit Task</span>
+    <button onclick="toggleTaskDetailPanel()">✕</button>
+  </div>
+
+  <div class="task-panel-body">
+    <!-- Upload Image -->
+    <label class="template-field">
+      <strong>📷 Upload Image</strong><br />
+      <input type="file" accept="image/*" class="template-input" />
+    </label>
+
+    <!-- Task Name -->
+    <input type="text" class="template-input" placeholder="Task name" />
+
+    <!-- Status -->
+    <select class="template-input">
+      <option>Status</option>
+      <option>New</option>
+      <option>Todo</option>
+      <option>In progress</option>
+      <option>Done</option>
+      <option>Approved</option>
+      <option>Billed</option>
+      <option>Failed</option>
+      <option>Archived</option>
+    </select>
+
+    <!-- Start & Due -->
+    <label class="template-field"><strong>Start</strong>
+      <input type="datetime-local" class="template-input" />
+    </label>
+
+    <label class="template-field"><strong>Due</strong>
+      <input type="datetime-local" class="template-input" />
+    </label>
+
+    <!-- Description -->
+    <textarea class="template-textarea" placeholder="Description of works"></textarea>
+
+    <!-- Linked Fields (clickable) -->
+    <div class="template-field" onclick="toggleProjectPanel()">📁 Project</div>
+    <div class="template-field" onclick="toggleLocationPanel()">📍 Location</div>
+    <div class="template-field" onclick="toggleAssigneePanel()">👥 Assignees</div>
+
+    <!-- Priority Dropdown -->
+    <label class="template-field"><strong>Priority</strong><br />
+      <select class="template-input">
+        <option>Highest</option>
+        <option>High</option>
+        <option selected>Medium</option>
+        <option>Low</option>
+        <option>Lowest</option>
+      </select>
+    </label>
+
+    <!-- File Upload (for assignee/documents) -->
+    <label class="template-field"><strong>📄 Documents</strong><br />
+      <input type="file" accept="image/*,application/pdf" class="template-input" />
+    </label>
+
+    <!-- Add Field -->
+    <div class="template-field" onclick="alert('Open Add Field Panel')">➕ Add Field</div>
+
+    <button class="add-task-button" onclick="saveTaskToGrid()">Save Task</button>
+
+    <!-- Delete Button -->
+    <button style="
+      background: none;
+      color: #d9534f;
+      border: 1px solid #d9534f;
+      border-radius: 8px;
+      padding: 10px;
+      font-weight: bold;
+      margin-top: 20px;
+      width: 100%;
+      cursor: pointer;
+    ">
+      🗑 Delete Task
+    </button>
+  </div>
+
+
+<!-- Project Panel -->
+<div id="projectPanel" class="task-panel hidden">
+  <div class="task-panel-header">
+    <span>Select Project</span>
+    <button onclick="toggleProjectPanel()">✕</button>
+  </div>
+  <div class="task-panel-body">
+    <button class="add-task-button" onclick="alert('Add New Project')">+ Add New Project</button>
+  </div>
+</div>
+
+<!-- Location Panel -->
+<div id="locationPanel" class="task-panel hidden">
+  <div class="task-panel-header">
+    <span>Add Task Location</span>
+    <button onclick="toggleLocationPanel()">✕</button>
+  </div>
+  <div class="task-panel-body">
+    <p>📍 Map feature coming soon...</p>
+  </div>
+</div>
+
+<!-- Assignees Panel -->
+<div id="assigneePanel" class="task-panel hidden">
+  <div class="task-panel-header">
+    <span>Select Assignees</span>
+    <button onclick="toggleAssigneePanel()">✕</button>
+  </div>
+  <div class="task-panel-body">
+    <button class="add-task-button" onclick="alert('Add New User')">+ Add New</button>
+  </div>
+</div>
+
+
+</div>
+
 
         <div id="companyPanel" class="company-panel">
           <div class="company-header">COMPANIES</div>
@@ -75,6 +210,66 @@
           <button class="logout-button" onclick="window.location.href='index.html'">🚪 Log out</button>
         </div>
       </div>
+
+<!-- Template Editor Panel -->
+<div id="templateEditorPanel" class="template-editor-panel hidden">
+  <div class="template-editor-header">
+    <span>Edit Task Template</span>
+    <button onclick="toggleTemplateEditorPanel()">✕</button>
+  </div>
+
+  <input class="template-input" type="text" placeholder="Task name" />
+  <textarea class="template-textarea" placeholder="Description"></textarea>
+
+  <div class="template-field">📁 Project</div>
+  <div class="template-field">📍 Location</div>
+  <div class="template-field">👥 Assignees</div>
+
+  <div class="template-field">
+    <label>Priority</label><br />
+    <select class="template-input">
+      <option>Low</option>
+      <option selected>Medium</option>
+      <option>High</option>
+    </select>
+  </div>
+
+  <div class="template-field">📊 Statuses</div>
+
+  <div class="template-field">
+    <label>➕ Add Field</label>
+  </div>
+
+  <div class="template-field">
+    <label>Estimated Amount</label><br />
+    <input class="template-input" type="text" placeholder="Amount" />
+    <input class="template-input" type="text" placeholder="Unit" style="margin-top: 8px;" />
+  </div>
+
+  <div class="template-field">
+    <label>Estimated Amount Overrun</label><br />
+    <select class="template-input">
+      <option selected>Not allowed</option>
+      <option>Allowed</option>
+    </select>
+  </div>
+
+  <button class="add-task-button" style="margin-top: 20px;">Save Template</button>
+
+  <button style="
+    background: none;
+    color: #d9534f;
+    border: 1px solid #d9534f;
+    border-radius: 8px;
+    padding: 10px;
+    font-weight: bold;
+    margin-top: 20px;
+    width: 100%;
+    cursor: pointer;
+  ">
+    🗑 Delete Template
+  </button>
+</div>
 
       <!-- Views Section -->
       <div class="task-section">
@@ -91,7 +286,8 @@
 
         <!-- Templates View -->
         <div id="taskTemplatesView" class="task-view hidden">
-          <p>This is the templates view. (Placeholder)</p>
+          <button class="add-task-button" onclick="toggleTemplateEditorPanel()">Add Template</button>
+          <p style="margin-top: 20px;">Manage your saved task templates below. (Feature coming soon.)</p>
         </div>
 
       </div>
@@ -113,7 +309,9 @@
         { headerName: "Beginning", field: "begin" },
         { headerName: "End", field: "end" },
         { headerName: "Description", field: "description" },
-        { headerName: "Created by", field: "createdBy" }
+        { headerName: "Created by", field: "createdBy" },
+        { headerName: "Created at", field: "createdAt" },
+        { headerName: "Name", field: "name" }
       ];
 
       const rowData = [
@@ -125,7 +323,9 @@
           begin: "5 Apr 2025 08:00",
           end: "5 Apr 2025 17:00",
           description: "Staff Room Area Works",
-          createdBy: "Adam Chapman"
+          createdBy: "Adam Chapman",
+          createdAt: "5 Apr 2025 08:00",
+          name: "Job Sheet"
         }
       ];
 
@@ -191,18 +391,126 @@
 
     // View Switching Logic
     function switchTaskView(view) {
-      const views = ['list', 'schedule', 'templates'];
-      views.forEach(v => {
-        document.getElementById(`task${capitalize(v)}View`).classList.add('hidden');
-        document.querySelector(`.task-tab[onclick*="${v}"]`).classList.remove('active');
-      });
-      document.getElementById(`task${capitalize(view)}View`).classList.remove('hidden');
-      document.querySelector(`.task-tab[onclick*="${view}"]`).classList.add('active');
-    }
+  const views = ['list', 'schedule', 'templates'];
+  views.forEach(v => {
+    document.getElementById(`task${capitalize(v)}View`).classList.add('hidden');
+    document.querySelector(`.task-tab[onclick*="${v}"]`).classList.remove('active');
+  });
+
+  const targetView = document.getElementById(`task${capitalize(view)}View`);
+  targetView.classList.remove('hidden');
+  document.querySelector(`.task-tab[onclick*="${view}"]`).classList.add('active');
+
+  // Fix for FullCalendar: force resize after showing
+  if (view === 'schedule' && typeof calendar !== 'undefined') {
+    setTimeout(() => calendar.updateSize(), 10);
+  }
+}
+
 
     function capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
+  </script>
+
+<script>
+function toggleTemplateEditorPanel() {
+  const panel = document.getElementById("templateEditorPanel");
+  panel.classList.toggle("hidden");
+}
+</script>
+
+<script>
+function toggleTaskDetailPanel() {
+  document.getElementById("taskDetailPanel").classList.toggle("hidden");
+}
+
+function openTaskDetailFromBlankTemplate() {
+  document.getElementById("taskTemplatePanel").classList.remove("open");
+  setTimeout(() => {
+    toggleTaskDetailPanel();
+  }, 300); // Wait for panel to close
+}
+</script>
+
+
+<script>
+function toggleProjectPanel() {
+  document.getElementById("projectPanel").classList.toggle("hidden");
+}
+
+function toggleLocationPanel() {
+  document.getElementById("locationPanel").classList.toggle("hidden");
+}
+
+function toggleAssigneePanel() {
+  document.getElementById("assigneePanel").classList.toggle("hidden");
+}
+</script>
+
+<script>
+let taskFormData = {};
+
+  function startNewTaskFromBlankTemplate() {
+    document.getElementById("taskTemplatePanel").classList.remove("open");
+    setTimeout(() => {
+      resetTaskForm();
+      toggleTaskDetailPanel();
+    }, 300);
+  }
+  
+  function toggleTaskDetailPanel() {
+    document.getElementById("taskDetailPanel").classList.toggle("hidden");
+  }
+  
+  // Resets form fields
+  function resetTaskForm() {
+    document.querySelector("#taskDetailPanel input[type='text']").value = '';
+    document.querySelector("#taskDetailPanel textarea").value = '';
+    document.querySelectorAll("#taskDetailPanel select").forEach(sel => sel.selectedIndex = 0);
+    taskFormData = {};
+  }
+  
+  // Generate random ID
+  function generateRandomId() {
+    return Math.floor(100 + Math.random() * 900);
+  }
+  </script>
+
+  <script>
+  function saveTaskToGrid() {
+    const id = generateRandomId();
+    const now = new Date().toLocaleString();
+  
+    const newTask = {
+      project: "Unassigned",
+      id: id,
+      status: getValue("Status"),
+      assigned: "Unassigned",
+      begin: getValue("Start"),
+      end: getValue("Due"),
+      description: document.querySelector("#taskDetailPanel textarea").value,
+      createdBy: "Current User", // Replace with actual user logic
+      createdAt: now,
+      name: document.querySelector("#taskDetailPanel input[type='text']").value || "Untitled Task"
+    };
+  
+    gridOptions.api.applyTransaction({ add: [newTask] });
+  
+    toggleTaskDetailPanel();
+  }
+  
+  // Utility to extract select/input values by label
+  function getValue(labelText) {
+    const inputs = Array.from(document.querySelectorAll("#taskDetailPanel label"));
+    for (let label of inputs) {
+      if (label.textContent.includes(labelText)) {
+        const input = label.querySelector("input, select");
+        return input?.value || "";
+      }
+    }
+    return "";
+  }
   </script>
 </body>
 </html>

@@ -18,7 +18,7 @@
 
   <section class="oasis-header">
     <div class="logo">
-      <img src="Images/OasisLogo.svg" alt="Oasis CM Logo">
+      <img src="Images/OasisLogo3.svg" alt="Oasis CM Logo">
     </div>
     <div class="center-buttons">
       <button class="header-btn">Products</button>
@@ -42,17 +42,115 @@
     <div id="floatingTextContainer"></div>
   </section>
   
-  <!-- New section below -->
   <section class="next-section">
-    <div class="next-section-content">
-      <h2>Next Section Content</h2>
-      <p>This is placeholder content for the next section. More details, visuals, or features can be added here.</p>
+    <div class="next-section-wrapper">
+      <!-- Left Side: Text and Icons -->
+      <div class="next-section-content">
+        <h1><span class="highlight">Streamline</span> Your Site Management</h1>
+        <p class="subtext">Modern tools for tracking labour, materials, sign-offs, and site activity — all in one place.</p>
+  
+        <ul class="features-list">
+          <li><img src="Images/TaskIconWhite.svg" alt="icon" /> Daily Task Sheets & Timesheets</li>
+          <li><img src="Images/ToolsIcon.svg" alt="icon" /> Materials & Tools Tracker</li>
+          <li><img src="Images/SiteSheetIcon.svg" alt="icon" /> Site Sign-offs & Reports</li>
+          <li><img src="Images/WorkBoardIcon.svg" alt="icon" /> Custom Work Boards</li>
+        </ul>
+      </div>
+  
+      <!-- Right Side: Image -->
+      <div class="next-section-image">
+        <img src="Images/OasisWebAppExIMG.svg" alt="App UI" />
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>See Oasis in Action</h2>
+      <p>Book a free 30-minute demo and see how Oasis helps you simplify site management with less effort.</p>
+      <div class="cta-buttons">
+        <a href="#book-demo" class="btn-primary">Book a Free Demo</a>
+        <a href="#pricing" class="btn-secondary">View Pricing</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonial-section">
+    <div class="testimonial-header">
+      <h2>You’re in a <span class="highlight">great bunch</span></h2>
+      <p>Join hundreds of satisfied customers using Oasis daily.</p>
+    </div>
+  
+    <!-- Scrollable wrapper -->
+    <div class="testimonial-carousel-wrapper">
+      <div class="testimonial-carousel" id="testimonialCarousel">
+        <!-- Review Card 1 -->
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <h3>Tasks Finally Simplified</h3>
+          <p>
+            Oasis helped us cut admin time in half. From labour tracking to material reports, everything’s logged and clear. It’s saved us time and prevented mistakes!
+          </p>
+          <span class="author">Jordan W., BuildPro Ltd</span>
+        </div>
+  
+        <!-- Review Card 2 -->
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <h3>Simple and Professional</h3>
+          <p>
+            The user interface is intuitive, and the team finally feels in sync. Our subcontractors love it — we even started using the chat tool daily on-site.
+          </p>
+          <span class="author">Lisa R., CoreConstruct</span>
+        </div>
+  
+        <!-- Review Card 3 -->
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <h3>Everything in One Place</h3>
+          <p>
+            What used to take multiple spreadsheets now takes seconds. Oasis gave us full project visibility — even while mobile. Highly recommended.
+          </p>
+          <span class="author">Daniel T., Oakframe Services</span>
+        </div>
+
+                <!-- Review Card 3 -->
+                <div class="testimonial-card">
+                  <div class="stars">★★★★★</div>
+                  <h3>Everything in One Place</h3>
+                  <p>
+                    What used to take multiple spreadsheets now takes seconds. Oasis gave us full project visibility — even while mobile. Highly recommended.
+                  </p>
+                  <span class="author">Daniel T., Oakframe Services</span>
+                </div>
+  
+        <!-- Add more cards here if needed -->
+      </div>
+    </div>
+  
+    <!-- Navigation Arrows -->
+    <div class="testimonial-nav">
+      <button class="nav-button left" onclick="scrollTestimonials(-1)" aria-label="Previous review"></button>
+      <button class="nav-button right" onclick="scrollTestimonials(1)" aria-label="Next review"></button>
     </div>
   </section>
   
+  
+  
+  
+  
   <footer class="footer">
     <div class="footer-content">
-    <img src="Images/OasisLogo2.svg" class="footer-logo" alt="Oasis CM Logo">
+    <img src="Images/OasisLogo3.svg" class="footer-logo" alt="Oasis CM Logo">
+        <!-- Social Icons -->
+        <div class="social-icons">
+          <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn">
+            <img src="Images/linkedinicon.svg" alt="LinkedIn" />
+          </a>
+          <a href="https://instagram.com" target="_blank" aria-label="Instagram">
+            <img src="Images/instaicon.svg" alt="Instagram" />
+          </a>
+        </div>
       <h3>Company</h3>
       <div class="footer-links">
         <a href="AboutUs.html">About Us</a>
@@ -61,12 +159,22 @@
         <a href="#">Terms of Service</a>
         <a href="#">Privacy Policy</a>
       </div>
+      <div class="footer-app-section">
+        <h3>Crew and Tools Management</h3>
+        <p>Manage projects, tasks and tools. Track work time, take photos and chat with the team.</p>
+        <p class="coming-soon-text">Web App Coming Soon to Both Stores</p>
+        <div class="store-badges">
+          <img src="Images/IOSAppIon.svg" alt="App Store" />
+          <img src="Images/AndroidAppIon.svg" alt="Google Play" />
+        </div>
+      </div>
+      
     </div>
   </footer>
   
   <script>
     const textList = [
-      "Making your work an Oasis",
+      "Making your work feel like an Oasis",
       "Daily Task Sheets",
       "Project/Task Sign Offs",
       "Material Tracking",
@@ -85,20 +193,23 @@
   
     const container = document.getElementById("floatingTextContainer");
   
+    let index = 0;
     function showFloatingText(text) {
+      // Remove any existing text
+      container.innerHTML = '';
+  
       const span = document.createElement("span");
       span.classList.add("floating-item");
       span.textContent = text;
-      container.appendChild(span); // temporarily add to measure it
+      container.appendChild(span);
   
-      // Wait for DOM to render so we can get size
+      // Wait for DOM to render
       requestAnimationFrame(() => {
         const containerWidth = container.offsetWidth;
         const containerHeight = container.offsetHeight;
         const textWidth = span.offsetWidth;
         const textHeight = span.offsetHeight;
   
-        // Clamp positions so text doesn’t overflow
         const maxLeft = containerWidth - textWidth;
         const maxTop = containerHeight - textHeight;
   
@@ -107,25 +218,47 @@
   
         span.style.left = `${left}px`;
         span.style.top = `${top}px`;
-  
-        // Fade in
         span.style.opacity = 1;
   
-        // Fade out after delay
         setTimeout(() => {
           span.style.opacity = 0;
-          setTimeout(() => container.removeChild(span), 1000);
-        }, 4000);
+          setTimeout(() => {
+            if (container.contains(span)) {
+              container.removeChild(span);
+            }
+          }, 1000); // wait for fade-out
+        }, 4000); // display duration
+
       });
     }
   
-    // Start floating text
-    let index = 0;
+    // Show one message at a time
     setInterval(() => {
       showFloatingText(textList[index]);
       index = (index + 1) % textList.length;
-    }, 2500);
+    }, 4000); // matches fade out duration
   </script>
+  
+  <script>
+    const carousel = document.getElementById('testimonialCarousel');
+    const scrollStep = () => {
+      const card = carousel.querySelector('.testimonial-card');
+      return card ? card.offsetWidth + 32 : 340; // width + estimated gap
+    };
+  
+    function scrollTestimonials(direction) {
+      const step = scrollStep();
+      const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+      const currentScroll = carousel.scrollLeft;
+  
+      let newScroll = currentScroll + direction * step;
+      newScroll = Math.max(0, Math.min(newScroll, maxScroll));
+  
+      carousel.scrollTo({ left: newScroll, behavior: 'smooth' });
+    }
+  </script>
+  
+  
   
 
 </body>

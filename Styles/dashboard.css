@@ -48,8 +48,8 @@ body {
   }
 
   .nav-icon {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
   }
   
   /* Main Content */
@@ -120,6 +120,53 @@ body {
   .add-task-button:hover {
     background-color: #0b5d42;
   }
+
+  .task-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100%;
+    background-color: #fff;
+    border-left: 1px solid #ddd;
+    box-shadow: -4px 0 10px rgba(0,0,0,0.1);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    font-family: 'League Spartan', sans-serif;
+  }
+  
+  .task-panel.hidden {
+    display: none;
+  }
+  
+  .task-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .task-panel-header button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  .task-panel-body {
+    padding: 20px;
+  }
+  
+  .task-panel-body .add-task-button {
+    width: 100%;
+  }
+  
   
   /* Slide Panel */
   .template-panel {
@@ -171,16 +218,35 @@ body {
   
   .template-item {
     background: #fff;
-    padding: 12px;
+    padding: 14px 16px;
     border: 1px solid #ddd;
     border-radius: 6px;
     cursor: pointer;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: 500;
     transition: background 0.2s ease;
   }
   
-  .template-item:hover {
-    background-color: #f1efe7;
+ .template-item:hover {
+  background-color: #f1efe7;
+}
+
+  .template-field {
+    background: #f8f9fa;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
   }
+  
+  .template-field:hover {
+    background: #f1efe7;
+  }
+  
   
   /* Sidebar Company Button */
 .sidebar-company {
@@ -443,3 +509,10 @@ body {
     font-weight: 500;
   }
   
+  #calendar {
+    min-height: 650px;
+  }
+  
+  .hidden {
+    display: none !important;
+  }

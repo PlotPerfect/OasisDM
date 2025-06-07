@@ -11,6 +11,15 @@
 
   <!-- AG Grid CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css" />
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <!-- Your Firebase Config/Setup -->
+  <script src="JS/firebaseAuth.js"></script>
+  <!-- FullCalendar and dayjs for schedule calendar -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
 </head>
 <body>
   <div class="dashboard-wrapper">
@@ -18,7 +27,7 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <img src="Images/OasisLogo3.svg" class="sidebar-logo" alt="Oasis Logo">
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav" style="max-height:calc(100vh - 120px);overflow-y:auto;display:flex;flex-direction:column;gap:0;">
         <button class="nav-button active">
           <img src="Images/OasisTaskIcon.svg" alt="Tasks" class="nav-icon">
         </button>
@@ -34,483 +43,162 @@
         <button class="nav-button">
           <img src="Images/CrewIcon.svg" alt="Crew" class="nav-icon">
         </button>
-
-
+        <button class="nav-button">
+          <img src="Images/SettingIcon.svg" alt="Settings" class="nav-icon">
+        </button>
         <!-- Company logo panel -->
         <div class="sidebar-company" onclick="toggleCompanyPanel()">
-          <img src="Images/CompanyLogoBaseIMG.svg" alt="Company Logo" class="company-logo">
+          <img id="sidebar-company-logo" src="Images/CompanyLogoBaseIMG.svg" alt="Company Logo" class="company-logo">
         </div>
       </nav>
     </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <div class="top-bar">
-        <h1>Tasks</h1>
-        <div class="task-tabs">
-          <button class="task-tab active" onclick="switchTaskView('list')">List</button>
-          <button class="task-tab" onclick="switchTaskView('schedule')">Schedule</button>
-          <button class="task-tab" onclick="switchTaskView('templates')">Templates</button>
-        </div>
-        <button class="add-task-button" onclick="toggleTemplatePanel()">+ Add Task</button>
-      </div>
-
-      <!-- Task Template Panel -->
-      <div id="taskTemplatePanel" class="template-panel">
-        <div class="template-header">
-          <span>Choose task template</span>
-          <button onclick="toggleTemplatePanel()">✕</button>
-        </div>
-        <div class="template-search">
-          <input type="text" placeholder="Search" />
-        </div>
-        <div class="template-options">
-          <div class="template-item" onclick="openTaskDetailFromBlankTemplate()">
-            <strong>🗒️ Blank template</strong><br/>
-            <small>Without any prefilled values</small>
-          </div>
-          <div class="template-item">Job Sheet</div>
-          <div class="template-item">Meeting</div>
-          <div class="template-item">OFF</div>
-          <div class="template-item">Site Survey</div>
-        </div>
-
-<!-- Task Detail Panel -->
-<div id="taskDetailPanel" class="task-panel hidden">
-  <div class="task-panel-header">
-    <span>Edit Task</span>
-    <button onclick="toggleTaskDetailPanel()">✕</button>
-  </div>
-
-  <div class="task-panel-body">
-    <!-- Upload Image -->
-    <label class="template-field">
-      <strong>📷 Upload Image</strong><br />
-      <input type="file" accept="image/*" class="template-input" />
-    </label>
-
-    <!-- Task Name -->
-    <input type="text" class="template-input" placeholder="Task name" />
-
-    <!-- Status -->
-    <select class="template-input">
-      <option>Status</option>
-      <option>New</option>
-      <option>Todo</option>
-      <option>In progress</option>
-      <option>Done</option>
-      <option>Approved</option>
-      <option>Billed</option>
-      <option>Failed</option>
-      <option>Archived</option>
-    </select>
-
-    <!-- Start & Due -->
-    <label class="template-field"><strong>Start</strong>
-      <input type="datetime-local" class="template-input" />
-    </label>
-
-    <label class="template-field"><strong>Due</strong>
-      <input type="datetime-local" class="template-input" />
-    </label>
-
-    <!-- Description -->
-    <textarea class="template-textarea" placeholder="Description of works"></textarea>
-
-    <!-- Linked Fields (clickable) -->
-    <div class="template-field" onclick="toggleProjectPanel()">📁 Project</div>
-    <div class="template-field" onclick="toggleLocationPanel()">📍 Location</div>
-    <div class="template-field" onclick="toggleAssigneePanel()">👥 Assignees</div>
-
-    <!-- Priority Dropdown -->
-    <label class="template-field"><strong>Priority</strong><br />
-      <select class="template-input">
-        <option>Highest</option>
-        <option>High</option>
-        <option selected>Medium</option>
-        <option>Low</option>
-        <option>Lowest</option>
-      </select>
-    </label>
-
-    <!-- File Upload (for assignee/documents) -->
-    <label class="template-field"><strong>📄 Documents</strong><br />
-      <input type="file" accept="image/*,application/pdf" class="template-input" />
-    </label>
-
-    <!-- Add Field -->
-    <div class="template-field" onclick="alert('Open Add Field Panel')">➕ Add Field</div>
-
-    <button class="add-task-button" onclick="saveTaskToGrid()">Save Task</button>
-
-    <!-- Delete Button -->
-    <button style="
-      background: none;
-      color: #d9534f;
-      border: 1px solid #d9534f;
-      border-radius: 8px;
-      padding: 10px;
-      font-weight: bold;
-      margin-top: 20px;
-      width: 100%;
-      cursor: pointer;
-    ">
-      🗑 Delete Task
-    </button>
-  </div>
-
-
-<!-- Project Panel -->
-<div id="projectPanel" class="task-panel hidden">
-  <div class="task-panel-header">
-    <span>Select Project</span>
-    <button onclick="toggleProjectPanel()">✕</button>
-  </div>
-  <div class="task-panel-body">
-    <button class="add-task-button" onclick="alert('Add New Project')">+ Add New Project</button>
-  </div>
-</div>
-
-<!-- Location Panel -->
-<div id="locationPanel" class="task-panel hidden">
-  <div class="task-panel-header">
-    <span>Add Task Location</span>
-    <button onclick="toggleLocationPanel()">✕</button>
-  </div>
-  <div class="task-panel-body">
-    <p>📍 Map feature coming soon...</p>
-  </div>
-</div>
-
-<!-- Assignees Panel -->
-<div id="assigneePanel" class="task-panel hidden">
-  <div class="task-panel-header">
-    <span>Select Assignees</span>
-    <button onclick="toggleAssigneePanel()">✕</button>
-  </div>
-  <div class="task-panel-body">
-    <button class="add-task-button" onclick="alert('Add New User')">+ Add New</button>
-  </div>
-</div>
-
-
-</div>
-
-
-        <div id="companyPanel" class="company-panel">
-          <div class="company-header">COMPANIES</div>
-          <div class="company-card">
-            <img src="Images/CompanyLogoBaseIMG.svg" class="company-logo-sm" />
-            <div class="company-info">
-              <strong>Corrigan and Chapman Construction Limited</strong>
-              <p>Verify your email and phone to access other companies.</p>
-            </div>
-            <button class="verify-button">✔ Verify</button>
-          </div>
-          <button class="logout-button" onclick="window.location.href='index.html'">🚪 Log out</button>
-        </div>
-      </div>
-
-<!-- Template Editor Panel -->
-<div id="templateEditorPanel" class="template-editor-panel hidden">
-  <div class="template-editor-header">
-    <span>Edit Task Template</span>
-    <button onclick="toggleTemplateEditorPanel()">✕</button>
-  </div>
-
-  <input class="template-input" type="text" placeholder="Task name" />
-  <textarea class="template-textarea" placeholder="Description"></textarea>
-
-  <div class="template-field">📁 Project</div>
-  <div class="template-field">📍 Location</div>
-  <div class="template-field">👥 Assignees</div>
-
-  <div class="template-field">
-    <label>Priority</label><br />
-    <select class="template-input">
-      <option>Low</option>
-      <option selected>Medium</option>
-      <option>High</option>
-    </select>
-  </div>
-
-  <div class="template-field">📊 Statuses</div>
-
-  <div class="template-field">
-    <label>➕ Add Field</label>
-  </div>
-
-  <div class="template-field">
-    <label>Estimated Amount</label><br />
-    <input class="template-input" type="text" placeholder="Amount" />
-    <input class="template-input" type="text" placeholder="Unit" style="margin-top: 8px;" />
-  </div>
-
-  <div class="template-field">
-    <label>Estimated Amount Overrun</label><br />
-    <select class="template-input">
-      <option selected>Not allowed</option>
-      <option>Allowed</option>
-    </select>
-  </div>
-
-  <button class="add-task-button" style="margin-top: 20px;">Save Template</button>
-
-  <button style="
-    background: none;
-    color: #d9534f;
-    border: 1px solid #d9534f;
-    border-radius: 8px;
-    padding: 10px;
-    font-weight: bold;
-    margin-top: 20px;
-    width: 100%;
-    cursor: pointer;
-  ">
-    🗑 Delete Template
-  </button>
-</div>
-
-      <!-- Views Section -->
-      <div class="task-section">
-
-        <!-- List View (Grid) -->
-        <div id="taskListView" class="task-view">
-          <div id="taskGrid" class="ag-theme-alpine" style="height: 600px; width: 100%;"></div>
-        </div>
-
-        <!-- Schedule View -->
-        <div id="taskScheduleView" class="task-view hidden">
-            <div id="calendar" style="height: 650px;"></div>
-          </div>
-
-        <!-- Templates View -->
-        <div id="taskTemplatesView" class="task-view hidden">
-          <button class="add-task-button" onclick="toggleTemplateEditorPanel()">Add Template</button>
-          <p style="margin-top: 20px;">Manage your saved task templates below. (Feature coming soon.)</p>
-        </div>
-
-      </div>
+    <!-- Main Content Area -->
+    <main id="main-content" class="main-content">
+      <!-- Content will be dynamically injected here -->
     </main>
   </div>
 
-  <!-- AG Grid JS -->
-  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
-  <!-- Calendar -->
+  <!-- Company Panel (hidden by default) -->
+  <div id="company-panel" style="display:none;position:fixed;top:0;right:0;width:400px;height:100vh;background:#fff;box-shadow:-2px 0 16px rgba(0,0,0,0.09);z-index:1000;padding:36px 32px 32px 32px;overflow-y:auto;">
+    <button id="close-company-panel" style="position:absolute;top:18px;right:22px;font-size:26px;background:none;border:none;color:#888;cursor:pointer;">&times;</button>
+    <h2 style="margin-top:0;font-size:1.5rem;font-weight:700;">Company Details</h2>
+    <div style="margin-bottom:24px;">
+      <label style="font-weight:500;font-size:15px;">Company Name</label>
+      <input id="company-name-input" type="text" style="width:100%;padding:10px 13px;font-size:15px;border:1.5px solid #e5e7eb;border-radius:7px;outline:none;margin-top:7px;" />
+    </div>
+    <div style="margin-bottom:24px;">
+      <label style="font-weight:500;font-size:15px;">Company Logo</label><br>
+      <img id="company-logo-preview" src="Images/CompanyLogoBaseIMG.svg" alt="Logo Preview" style="width:90px;height:90px;object-fit:contain;border-radius:12px;border:1.5px solid #e5e7eb;margin-top:10px;background:#f3f4f6;display:block;">
+      <input id="company-logo-input" type="file" accept="image/*" style="margin-top:12px;" />
+    </div>
+    <button id="save-company-details-btn" style="width:100%;padding:12px 0;font-size:15px;background:#2563eb;color:#fff;border:none;border-radius:7px;font-weight:600;">Save</button>
+    <button id="logout-btn" style="width:100%;padding:12px 0;font-size:15px;background:#e53e3e;color:#fff;border:none;border-radius:7px;font-weight:600;margin-top:18px;">Log Out</button>
+  </div>
+
+  <!-- Existing scripts -->
+  <script src="JS/firebaseAuth.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const columnDefs = [
-        { headerName: "Project", field: "project" },
-        { headerName: "ID", field: "id", width: 90 },
-        { headerName: "Status", field: "status" },
-        { headerName: "Assigned", field: "assigned" },
-        { headerName: "Beginning", field: "begin" },
-        { headerName: "End", field: "end" },
-        { headerName: "Description", field: "description" },
-        { headerName: "Created by", field: "createdBy" },
-        { headerName: "Created at", field: "createdAt" },
-        { headerName: "Name", field: "name" }
-      ];
+  <!-- Modular section scripts -->
+  <script type="module">
+    import { renderTasksSection } from './JS/tasksSection.js';
+    import { renderChatSection } from './JS/chatSection.js';
+    import { renderProjectsSection } from './JS/projectsSection.js';
+    import { renderTrackerSection } from './JS/trackerSection.js';
+    import { renderCrewSection } from './JS/crewSection.js';
+    import { renderSettingSection } from './JS/settingSection.js';
 
-      const rowData = [
-        {
-          project: "Southbury Leisure Centre",
-          id: 30,
-          status: "Done",
-          assigned: "BL, CS",
-          begin: "5 Apr 2025 08:00",
-          end: "5 Apr 2025 17:00",
-          description: "Staff Room Area Works",
-          createdBy: "Adam Chapman",
-          createdAt: "5 Apr 2025 08:00",
-          name: "Job Sheet"
-        }
-      ];
+    const navButtons = document.querySelectorAll('.nav-button');
+    const mainContent = document.getElementById('main-content');
 
-      const gridOptions = {
-        columnDefs,
-        rowData,
-        pagination: true,
-        defaultColDef: {
-          sortable: true,
-          filter: true,
-          resizable: true
-        }
-      };
-
-      const gridDiv = document.getElementById("taskGrid");
-      agGrid.createGrid(gridDiv, gridOptions);
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-    const calendarEl = document.getElementById('calendar');
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'timeGridWeek',
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'timeGridDay,timeGridWeek,dayGridMonth'
-      },
-      events: [
-        {
-          title: 'Job Sheet - Southbury Leisure Centre',
-          start: '2025-04-07T08:00:00',
-          end: '2025-04-07T17:00:00',
-          backgroundColor: '#0e6f4f'
-        },
-        {
-          title: 'Job Sheet - Crystal Palace',
-          start: '2025-04-08T08:00:00',
-          end: '2025-04-08T17:00:00',
-          backgroundColor: '#004f9e'
-        },
-        {
-          title: 'OFF - Paid Holiday',
-          start: '2025-04-07T08:00:00',
-          end: '2025-04-07T17:00:00',
-          backgroundColor: '#9e00b0'
-        }
-      ]
-    });
-
-    calendar.render();
-  });
-
-    // Panel toggles
-    function toggleTemplatePanel() {
-      const panel = document.getElementById("taskTemplatePanel");
-      panel.classList.toggle("open");
-    }
-
-    function toggleCompanyPanel() {
-      const panel = document.getElementById("companyPanel");
-      panel.classList.toggle("open");
-    }
-
-    // View Switching Logic
-    function switchTaskView(view) {
-  const views = ['list', 'schedule', 'templates'];
-  views.forEach(v => {
-    document.getElementById(`task${capitalize(v)}View`).classList.add('hidden');
-    document.querySelector(`.task-tab[onclick*="${v}"]`).classList.remove('active');
-  });
-
-  const targetView = document.getElementById(`task${capitalize(view)}View`);
-  targetView.classList.remove('hidden');
-  document.querySelector(`.task-tab[onclick*="${view}"]`).classList.add('active');
-
-  // Fix for FullCalendar: force resize after showing
-  if (view === 'schedule' && typeof calendar !== 'undefined') {
-    setTimeout(() => calendar.updateSize(), 10);
-  }
-}
-
-
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-  </script>
-
-<script>
-function toggleTemplateEditorPanel() {
-  const panel = document.getElementById("templateEditorPanel");
-  panel.classList.toggle("hidden");
-}
-</script>
-
-<script>
-function toggleTaskDetailPanel() {
-  document.getElementById("taskDetailPanel").classList.toggle("hidden");
-}
-
-function openTaskDetailFromBlankTemplate() {
-  document.getElementById("taskTemplatePanel").classList.remove("open");
-  setTimeout(() => {
-    toggleTaskDetailPanel();
-  }, 300); // Wait for panel to close
-}
-</script>
-
-
-<script>
-function toggleProjectPanel() {
-  document.getElementById("projectPanel").classList.toggle("hidden");
-}
-
-function toggleLocationPanel() {
-  document.getElementById("locationPanel").classList.toggle("hidden");
-}
-
-function toggleAssigneePanel() {
-  document.getElementById("assigneePanel").classList.toggle("hidden");
-}
-</script>
-
-<script>
-let taskFormData = {};
-
-  function startNewTaskFromBlankTemplate() {
-    document.getElementById("taskTemplatePanel").classList.remove("open");
-    setTimeout(() => {
-      resetTaskForm();
-      toggleTaskDetailPanel();
-    }, 300);
-  }
-  
-  function toggleTaskDetailPanel() {
-    document.getElementById("taskDetailPanel").classList.toggle("hidden");
-  }
-  
-  // Resets form fields
-  function resetTaskForm() {
-    document.querySelector("#taskDetailPanel input[type='text']").value = '';
-    document.querySelector("#taskDetailPanel textarea").value = '';
-    document.querySelectorAll("#taskDetailPanel select").forEach(sel => sel.selectedIndex = 0);
-    taskFormData = {};
-  }
-  
-  // Generate random ID
-  function generateRandomId() {
-    return Math.floor(100 + Math.random() * 900);
-  }
-  </script>
-
-  <script>
-  function saveTaskToGrid() {
-    const id = generateRandomId();
-    const now = new Date().toLocaleString();
-  
-    const newTask = {
-      project: "Unassigned",
-      id: id,
-      status: getValue("Status"),
-      assigned: "Unassigned",
-      begin: getValue("Start"),
-      end: getValue("Due"),
-      description: document.querySelector("#taskDetailPanel textarea").value,
-      createdBy: "Current User", // Replace with actual user logic
-      createdAt: now,
-      name: document.querySelector("#taskDetailPanel input[type='text']").value || "Untitled Task"
-    };
-  
-    gridOptions.api.applyTransaction({ add: [newTask] });
-  
-    toggleTaskDetailPanel();
-  }
-  
-  // Utility to extract select/input values by label
-  function getValue(labelText) {
-    const inputs = Array.from(document.querySelectorAll("#taskDetailPanel label"));
-    for (let label of inputs) {
-      if (label.textContent.includes(labelText)) {
-        const input = label.querySelector("input, select");
-        return input?.value || "";
+    function handleNavClick(alt) {
+      switch (alt) {
+        case 'Tasks':
+          renderTasksSection(mainContent);
+          break;
+        case 'Chat':
+          renderChatSection(mainContent);
+          break;
+        case 'Projects':
+          renderProjectsSection(mainContent);
+          break;
+        case 'Tracker':
+          renderTrackerSection(mainContent);
+          break;
+        case 'Crew':
+          renderCrewSection(mainContent);
+          break;
+        case 'Settings':
+          renderSettingSection(mainContent);
+          break;
+        default:
+          mainContent.innerHTML = '';
       }
     }
-    return "";
-  }
+
+    navButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        navButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const alt = btn.querySelector('img').alt;
+        handleNavClick(alt);
+      });
+    });
+
+    // Initial load: show Tasks section or whichever you prefer
+    handleNavClick('Tasks');
+
+    // Company panel logic
+    window.toggleCompanyPanel = function() {
+      const panel = document.getElementById('company-panel');
+      if (panel) panel.style.display = 'block';
+    };
+    const closeCompanyPanelBtn = document.getElementById('close-company-panel');
+    if (closeCompanyPanelBtn) {
+      closeCompanyPanelBtn.onclick = function() {
+        document.getElementById('company-panel').style.display = 'none';
+      };
+    }
+
+    // Company logo upload/preview logic
+    const logoInput = document.getElementById('company-logo-input');
+    const logoPreview = document.getElementById('company-logo-preview');
+    const sidebarLogo = document.getElementById('sidebar-company-logo');
+    if (logoInput && logoPreview && sidebarLogo) {
+      logoInput.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            logoPreview.src = evt.target.result;
+            sidebarLogo.src = evt.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+    }
+
+    // Optionally, save company name and logo to Firestore or localStorage on save
+    const saveCompanyBtn = document.getElementById('save-company-details-btn');
+    if (saveCompanyBtn) {
+      saveCompanyBtn.onclick = function() {
+        const name = document.getElementById('company-name-input').value.trim();
+        const logoSrc = logoPreview.src;
+        // Save to localStorage (or Firestore if desired)
+        localStorage.setItem('companyName', name);
+        localStorage.setItem('companyLogo', logoSrc);
+        sidebarLogo.src = logoSrc;
+        alert('Company details saved!');
+        document.getElementById('company-panel').style.display = 'none';
+      };
+      // On load, restore from localStorage
+      window.addEventListener('DOMContentLoaded', function() {
+        const name = localStorage.getItem('companyName');
+        const logo = localStorage.getItem('companyLogo');
+        if (name) document.getElementById('company-name-input').value = name;
+        if (logo) {
+          logoPreview.src = logo;
+          sidebarLogo.src = logo;
+        }
+      });
+    }
+    // Logout button logic
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.onclick = function() {
+        if (window.firebase && window.firebase.auth) {
+          window.firebase.auth().signOut().then(function() {
+            window.location.href = 'LoginPage.html';
+          }).catch(function(error) {
+            alert('Logout failed: ' + error.message);
+          });
+        } else {
+          window.location.href = 'LoginPage.html';
+        }
+      };
+    }
   </script>
 </body>
 </html>

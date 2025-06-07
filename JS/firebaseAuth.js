@@ -1,4 +1,3 @@
-
 // ✅ Firebase Config Object
 const firebaseConfig = {
     apiKey: "AIzaSyAY90PUqfn9AH0dF3qqclWg9lRtcFYsLWM",
@@ -21,7 +20,8 @@ const firebaseConfig = {
   // ✅ Initialize Firebase Authentication
   const auth = firebase.auth();
   const db = firebase.firestore();
-
+  window.db = db;
+  
   console.log("✅ Firebase Auth initialized:", auth);
   
   // Optional: Monitor auth state
@@ -32,4 +32,3 @@ const firebaseConfig = {
       console.log("🔒 No user signed in.");
     }
   });
-  

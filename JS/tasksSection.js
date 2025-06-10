@@ -160,6 +160,28 @@ export function renderTasksSection(mainContent) {
           <button id="documents-done-btn" type="button" style="margin-top:18px;width:100%;padding:12px 0;font-size:15px;background:#2563eb;color:#fff;border:none;border-radius:7px;font-weight:600;">Done</button>
         </div>
       </div>
+      <div class="add-project-panel" id="add-template-panel" style="right:-420px;">
+        <div class="add-project-panel-content">
+          <button class="close-add-project-panel" id="close-add-template-panel">&times;</button>
+          <h3 style="font-size:1.35rem;font-weight:700;margin-bottom:24px;margin-top:0;">Add Task Template</h3>
+          <div style="margin-bottom:22px;">
+            <label style="display:block;font-weight:500;font-size:15px;margin-bottom:7px;">Template Name</label>
+            <input id="template-name-input" type="text" class="project-input" placeholder="Template name" style="width:100%;padding:10px 13px;font-size:15px;border:1.5px solid #e5e7eb;border-radius:7px;outline:none;" />
+          </div>
+          <div style="margin-bottom:22px;">
+            <label style="display:block;font-weight:500;font-size:15px;margin-bottom:7px;">Description</label>
+            <textarea id="template-desc-input" class="project-input" placeholder="Describe the template..." rows="3" style="resize:vertical;width:100%;padding:10px 13px;font-size:15px;border:1.5px solid #e5e7eb;border-radius:7px;outline:none;"></textarea>
+          </div>
+          <button id="open-projects-panel-btn" class="add-project-btn" type="button" style="margin-bottom:18px;">Projects</button>
+        </div>
+      </div>
+      <div class="add-project-panel" id="projects-list-panel" style="right:-420px;z-index:1201;">
+        <div class="add-project-panel-content" style="overflow-y:auto; max-height:80vh; position:relative;">
+          <button class="close-add-project-panel" id="close-projects-list-panel" style="position:absolute; top:18px; right:18px; background:none; border:none; font-size:22px; cursor:pointer;">&times;</button>
+          <h3 style="margin-top:0;">Projects</h3>
+          <div id="projects-list-container"></div>
+        </div>
+      </div>
     `;
 
     const addTaskBtn = sectionContent.querySelector('#add-task-btn');
@@ -485,6 +507,8 @@ export function renderTasksSection(mainContent) {
               <td><span class="status-badge status-${(task.status||'').toLowerCase().replace(/\s/g,'-')}">${task.status || ''}</span></td>
               <td></td>
             `;
+            tr.style.cursor = 'pointer';
+            tr.onclick = () => openEditTaskPanel(doc.id, task);
             tbody.appendChild(tr);
           });
         }
@@ -531,6 +555,56 @@ export function renderTasksSection(mainContent) {
     }
     // Add Task logic
     const saveTaskBtn = sectionContent.querySelector('#save-task-btn');
+    // Track edit mode
+    let editingTaskId = null;
+
+    // Function to open edit panel and pre-fill data
+    function openEditTaskPanel(taskId, task) {
+      editingTaskId = taskId;
+      // Open blank task panel
+      const blankTaskPanel = sectionContent.querySelector('#blank-task-panel');
+      if (blankTaskPanel) {
+        blankTaskPanel.style.right = '0';
+        blankTaskPanel.classList.add('open');
+      }
+      // Update title and button text
+      const titleEl = sectionContent.querySelector('#add-task-title');
+      if (titleEl) titleEl.textContent = 'Edit Task';
+      const saveBtn = sectionContent.querySelector('#save-task-btn');
+      if (saveBtn) saveBtn.textContent = 'Save Changes';
+      // Fill form fields
+      sectionContent.querySelector('#blank-task-name-input').value = task.name || '';
+      sectionContent.querySelector('#blank-task-status-input').value = task.status || 'Todo';
+      sectionContent.querySelector('#task-priority-input').value = task.priority || 'Medium';
+      // Start date/time
+      if (task.start) {
+        const [date, time] = task.start.split('T');
+        sectionContent.querySelector('#blank-task-start-date').value = date || '';
+        sectionContent.querySelector('#blank-task-start-time').value = time || '';
+      } else {
+        sectionContent.querySelector('#blank-task-start-date').value = '';
+        sectionContent.querySelector('#blank-task-start-time').value = '';
+      }
+      // Due date/time
+      if (task.due) {
+        const [date, time] = task.due.split('T');
+        sectionContent.querySelector('#blank-task-due-date').value = date || '';
+        sectionContent.querySelector('#blank-task-due-time').value = time || '';
+      } else {
+        sectionContent.querySelector('#blank-task-due-date').value = '';
+        sectionContent.querySelector('#blank-task-due-time').value = '';
+      }
+      sectionContent.querySelector('#blank-task-desc-input').value = task.desc || '';
+      // Project and crew selection
+      const selProj = sectionContent.querySelector('#selected-project-name');
+      if (selProj) { selProj.textContent = task.project || ''; selProj.style.display = task.project ? 'block' : 'none'; }
+      const selCrew = sectionContent.querySelector('#selected-crew-name');
+      if (selCrew) { selCrew.textContent = task.crew || ''; selCrew.style.display = task.crew ? 'block' : 'none'; }
+      // Documents
+      selectedDocuments = (task.documents || []).map(d => ({ name: d.name, size: d.size, type: d.type }));
+      updateDocumentsUI();
+    }
+
     if (saveTaskBtn) {
       saveTaskBtn.onclick = async () => {
         // Gather form values
@@ -565,8 +639,11 @@ export function renderTasksSection(mainContent) {
         };
         // Save to Firestore
         try {
-          if (!window.db || typeof window.db.collection !== 'function') throw new Error('Firestore not initialized');
-          await window.db.collection('tasks').add(task);
+          if (editingTaskId) {
+            await window.db.collection('tasks').doc(editingTaskId).update(task);
+          } else {
+            await window.db.collection('tasks').add(task);
+          }
         } catch (err) {
           alert('Failed to save task: ' + err.message);
           return;
@@ -596,6 +673,11 @@ export function renderTasksSection(mainContent) {
         // After adding a new task, reload the table from Firestore
         loadTasksToTable();
         // Optionally, reset form fields here
+        // Reset edit mode
+        editingTaskId = null;
+        // Restore button text
+        saveTaskBtn.textContent = 'Add Task';
+        const titleEl = sectionContent.querySelector('#add-task-title'); if (titleEl) titleEl.textContent = 'Add Task - Blank Template';
       };
     }
   }
@@ -613,10 +695,216 @@ export function renderTasksSection(mainContent) {
       if (tabName === 'list') {
         renderTaskList();
       } else if (tabName === 'schedule') {
-        sectionContent.innerHTML = '<p>This is the Tasks Schedule. Add your calendar or schedule UI here.</p>';
+        sectionContent.innerHTML = `<div id="tasks-calendar" style="background:#f6fafd; border-radius:10px; padding:18px 8px 8px 8px; min-height:420px;"></div>`;
+        setTimeout(() => renderTasksCalendar(), 0);
       } else if (tabName === 'templates') {
-        sectionContent.innerHTML = '<p>This is the Tasks Templates. Add your templates UI here.</p>';
+        sectionContent.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+            <h3 style="margin:0;">Task Templates</h3>
+            <button class="add-project-btn" id="add-template-btn">+ Add Template</button>
+          </div>
+          <div style="overflow-x:auto;max-height:420px;overflow-y:auto;">
+            <table class="projects-list-table" id="templates-list-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Project</th>
+                  <th>Location</th>
+                  <th>Priority</th>
+                  <th>Assignees</th>
+                  <th>Description</th>
+                  <th>Created by</th>
+                  <th>Created at</th>
+                </tr>
+              </thead>
+              <tbody id="templates-list-tbody">
+                <!-- Templates will be rendered here -->
+              </tbody>
+            </table>
+          </div>
+          <div class="add-project-panel" id="add-template-panel" style="right:-420px;">
+            <div class="add-project-panel-content">
+              <button class="close-add-project-panel" id="close-add-template-panel">&times;</button>
+              <h3 style="font-size:1.35rem;font-weight:700;margin-bottom:24px;margin-top:0;">Add Task Template</h3>
+              <div style="margin-bottom:22px;">
+                <label style="display:block;font-weight:500;font-size:15px;margin-bottom:7px;">Template Name</label>
+                <input id="template-name-input" type="text" class="project-input" placeholder="Template name" style="width:100%;padding:10px 13px;font-size:15px;border:1.5px solid #e5e7eb;border-radius:7px;outline:none;" />
+              </div>
+              <div style="margin-bottom:22px;">
+                <label style="display:block;font-weight:500;font-size:15px;margin-bottom:7px;">Description</label>
+                <textarea id="template-desc-input" class="project-input" placeholder="Describe the template..." rows="3" style="resize:vertical;width:100%;padding:10px 13px;font-size:15px;border:1.5px solid #e5e7eb;border-radius:7px;outline:none;"></textarea>
+              </div>
+              <button id="open-projects-panel" class="add-project-btn" type="button" style="width:100%;margin-top:0;">Projects</button>
+            </div>
+            <div class="add-project-panel" id="projects-list-panel" style="right:-420px;z-index:1201;">
+              <div class="add-project-panel-content" style="overflow-y:auto; max-height:80vh; position:relative;">
+                <button class="close-add-project-panel" id="close-projects-list-panel" style="position:absolute; top:18px; right:18px; background:none; border:none; font-size:22px; cursor:pointer;">&times;</button>
+                <h3 style="margin-top:0;">Projects</h3>
+                <div id="projects-list-container"></div>
+              </div>
+            </div>
+          </div>
+        `;
+        // Panel open/close logic for Add Template
+        const addTemplateBtn = sectionContent.querySelector('#add-template-btn');
+        const addTemplatePanel = sectionContent.querySelector('#add-template-panel');
+        const closeAddTemplatePanel = sectionContent.querySelector('#close-add-template-panel');
+        const openProjectsPanel = sectionContent.querySelector('#open-projects-panel');
+        const projectsListPanel = sectionContent.querySelector('#projects-list-panel');
+        const closeProjectsListPanel = sectionContent.querySelector('#close-projects-list-panel');
+        const projectsListContainer = sectionContent.querySelector('#projects-list-container');
+        if (addTemplateBtn && addTemplatePanel) {
+          addTemplateBtn.onclick = () => {
+            addTemplatePanel.style.right = '0';
+            addTemplatePanel.classList.add('open');
+          };
+        }
+        if (closeAddTemplatePanel && addTemplatePanel) {
+          closeAddTemplatePanel.onclick = () => {
+            addTemplatePanel.style.right = '-420px';
+            addTemplatePanel.classList.remove('open');
+          };
+        }
+        if (openProjectsPanel && projectsListPanel) {
+          openProjectsPanel.onclick = async () => {
+            projectsListPanel.style.right = '0';
+            projectsListPanel.classList.add('open');
+            // Fetch and render projects from Firestore
+            if (projectsListContainer) {
+              projectsListContainer.innerHTML = '<div style="text-align:center;color:#888;">Loading projects...</div>';
+              try {
+                const snapshot = await window.db.collection('projects').orderBy('name').get();
+                if (snapshot.empty) {
+                  projectsListContainer.innerHTML = '<div style="color:#888;text-align:center;">No projects found.</div>';
+                } else {
+                  let html = '<table class="projects-list-table" style="margin-top:12px;"><thead><tr><th>Name</th><th>Status</th><th>Location</th><th>Manager</th></tr></thead><tbody>';
+                  snapshot.forEach(doc => {
+                    const p = doc.data();
+                    html += `<tr style="cursor:pointer;">
+              <td><span style="display:flex;align-items:center;gap:8px;"><span style="display:inline-block;width:16px;height:16px;border-radius:4px;background:${p.color||'#007bff'};"></span>${p.name||''}</span></td>
+              <td><span class="status-badge status-${(p.status||'').replace(/\s+/g,'-').toLowerCase()}">${p.status||''}</span></td>
+              <td>${p.location||''}</td>
+              <td>${p.managerName||''}</td>
+            </tr>`;
+                  });
+                  html += '</tbody></table>';
+                  projectsListContainer.innerHTML = html;
+                }
+              } catch (err) {
+                projectsListContainer.innerHTML = `<div style="color:#e53e3e;text-align:center;">Failed to load projects: ${err.message}</div>`;
+              }
+            }
+          };
+        }
+        if (closeProjectsListPanel && projectsListPanel) {
+          closeProjectsListPanel.onclick = () => {
+            projectsListPanel.style.right = '-420px';
+            projectsListPanel.classList.remove('open');
+          };
+        }
       }
     });
+  });
+}
+
+// --- Calendar for Tasks Schedule Tab ---
+function renderTasksCalendar() {
+  const sectionContent = document.querySelector('#tasks-section-content');
+  const calendarEl = sectionContent.querySelector('#tasks-calendar');
+  if (!calendarEl) return;
+  calendarEl.innerHTML = '';
+  // Fetch tasks from Firestore
+  window.db.collection('tasks').get().then(snapshot => {
+    const events = [];
+    snapshot.forEach(doc => {
+      const task = doc.data();
+      if (task.start) {
+        events.push({
+          title: `<div class='fc-event-title-custom'><b>Task</b><br><span style='font-size:13px;'>${task.name || ''}</span></div>`,
+          start: task.start.split('T')[0],
+          end: task.due ? (task.due.split('T')[0]) : undefined,
+          backgroundColor: '#2563eb',
+          borderColor: '#2563eb',
+          display: 'block',
+          extendedProps: { ...task }
+        });
+      }
+    });
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'timeGridWeek',
+      height: 420,
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      editable: true, // Allow drag and resize
+      events,
+      eventContent: function(arg) {
+        return { html: arg.event.title };
+      },
+      eventClick: function(info) {
+        // Optionally open edit panel for the task
+        const task = info.event.extendedProps;
+        if (task && task.name) {
+          // Find the Firestore doc id for this task
+          window.db.collection('tasks').where('name', '==', task.name).limit(1).get().then(snap => {
+            if (!snap.empty) {
+              openEditTaskPanel(snap.docs[0].id, snap.docs[0].data());
+            }
+          });
+        }
+      },
+      eventDrop: async function(info) {
+        // When a task is moved to a new date/time
+        const event = info.event;
+        const task = event.extendedProps;
+        // Find the Firestore doc id for this task
+        const name = task.name;
+        if (!name) return;
+        // Find the doc by name (assumes unique names, otherwise use id in extendedProps)
+        const snap = await window.db.collection('tasks').where('name', '==', name).limit(1).get();
+        if (!snap.empty) {
+          const doc = snap.docs[0];
+          // Update start and end (due) in Firestore
+          await window.db.collection('tasks').doc(doc.id).update({
+            start: event.start ? event.start.toISOString().slice(0,16) : '',
+            due: event.end ? event.end.toISOString().slice(0,16) : ''
+          });
+          // Also update the task list table if visible
+          const row = document.querySelector(`#tasks-list-table tbody tr td:first-child:contains('${name}')`);
+          if (row) {
+            const tr = row.parentElement;
+            if (tr) {
+              tr.children[4].textContent = event.start ? event.start.toISOString().replace('T',' ').slice(0,16) : '';
+              tr.children[5].textContent = event.end ? event.end.toISOString().replace('T',' ').slice(0,16) : '';
+            }
+          }
+        }
+      },
+      eventResize: async function(info) {
+        // When a task is resized (duration changed)
+        const event = info.event;
+        const task = event.extendedProps;
+        const name = task.name;
+        if (!name) return;
+        const snap = await window.db.collection('tasks').where('name', '==', name).limit(1).get();
+        if (!snap.empty) {
+          const doc = snap.docs[0];
+          await window.db.collection('tasks').doc(doc.id).update({
+            due: event.end ? event.end.toISOString().slice(0,16) : ''
+          });
+          // Update the task list table if visible
+          const row = document.querySelector(`#tasks-list-table tbody tr td:first-child:contains('${name}')`);
+          if (row) {
+            const tr = row.parentElement;
+            if (tr) {
+              tr.children[5].textContent = event.end ? event.end.toISOString().replace('T',' ').slice(0,16) : '';
+            }
+          }
+        }
+      }
+    });
+    calendar.render();
   });
 }

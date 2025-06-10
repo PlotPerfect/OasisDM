@@ -23,9 +23,17 @@
 </head>
 <body>
   <div class="dashboard-wrapper">
-
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
+      <button id="sidebar-toggle-btn" style="position:absolute;top:18px;left:210px;width:36px;height:36px;background:#f3f4f6;border:none;border-radius:8px;display:flex;align-items:center;justify-content:center;z-index:1100;box-shadow:0 1px 4px rgba(0,0,0,0.10);cursor:pointer;transition:left 0.2s;outline:none;">
+        <span id="sidebar-toggle-icon" style="font-size:22px;transition:transform 0.2s;color:#2563eb;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
+          <svg id="sidebar-toggle-svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="6" width="14" height="2.2" rx="1.1" fill="#2563eb"/>
+            <rect x="4" y="10" width="14" height="2.2" rx="1.1" fill="#2563eb"/>
+            <rect x="4" y="14" width="14" height="2.2" rx="1.1" fill="#2563eb"/>
+          </svg>
+        </span>
+      </button>
       <img src="Images/OasisLogo3.svg" class="sidebar-logo" alt="Oasis Logo">
       <nav class="sidebar-nav" style="max-height:calc(100vh - 120px);overflow-y:auto;display:flex;flex-direction:column;gap:0;">
         <button class="nav-button active">
@@ -199,6 +207,35 @@
         }
       };
     }
+
+    // Sidebar hide/expand logic
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+    const sidebarToggleIcon = document.getElementById('sidebar-toggle-icon');
+    const sidebarToggleSVG = document.getElementById('sidebar-toggle-svg');
+    let sidebarExpanded = true;
+    sidebarToggleBtn.onclick = function() {
+      sidebarExpanded = !sidebarExpanded;
+      if (!sidebarExpanded) {
+        sidebar.style.width = '60px';
+        sidebar.classList.add('sidebar-collapsed');
+        sidebarToggleBtn.style.left = '10px';
+        sidebarToggleIcon.style.transform = 'rotate(180deg)';
+        sidebarToggleSVG.innerHTML = '<polygon points="7,5 15,11 7,17" fill="#2563eb"/>';
+        document.querySelectorAll('.sidebar-logo, .sidebar-company').forEach(el => {
+          if (el) el.style.display = 'none';
+        });
+      } else {
+        sidebar.style.width = '';
+        sidebar.classList.remove('sidebar-collapsed');
+        sidebarToggleBtn.style.left = '210px';
+        sidebarToggleIcon.style.transform = '';
+        sidebarToggleSVG.innerHTML = '<rect x="4" y="6" width="14" height="2.2" rx="1.1" fill="#2563eb"/><rect x="4" y="10" width="14" height="2.2" rx="1.1" fill="#2563eb"/><rect x="4" y="14" width="14" height="2.2" rx="1.1" fill="#2563eb"/>';
+        document.querySelectorAll('.sidebar-logo, .sidebar-company').forEach(el => {
+          if (el) el.style.display = '';
+        });
+      }
+    };
   </script>
 </body>
 </html>
